@@ -29,7 +29,7 @@ namespace AlunosApi
         {
             services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); }); // -para fazer uso do SQLServer
 
-            services.AddScoped<IAlunoService, AlunoService>(); // -diz ao container injetor de dependecia que referenciar um AlunoService, ele implementara uma interface
+            services.AddScoped<IAlunoService, AlunoService>(); // -diz ao container injetor de dependecia que ao referenciar um IAlunoService, ele implementara os metodos da Classe AlunoService
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
