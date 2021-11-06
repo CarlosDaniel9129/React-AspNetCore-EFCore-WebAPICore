@@ -2,6 +2,7 @@ using AlunosApi.Context;
 using AlunosApi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,8 @@ namespace AlunosApi
             services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); }); // -para fazer uso do SQLServer
 
             services.AddScoped<IAlunoService, AlunoService>(); // -diz ao container injetor de dependecia que ao referenciar um IAlunoService, ele implementara os metodos da Classe AlunoService
+
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

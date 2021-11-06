@@ -1,9 +1,11 @@
 ﻿using AlunosApi.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlunosApi.Context
 {
-    public class AppDbContext : DbContext // -possui os recursos de mapeamento
+    public class AppDbContext : IdentityDbContext<IdentityUser> 
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
