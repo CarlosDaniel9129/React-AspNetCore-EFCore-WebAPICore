@@ -50,6 +50,13 @@ namespace AlunosApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AlunosApi v1"));
             }
 
+            app.UseCors(options =>
+            {
+                options.WithOrigins("http://localhost:3000"); // -rota onde o React ira fazer as requisições
+                options.AllowAnyMethod();
+                options.AllowAnyHeader();
+            });
+
             app.UseRouting();
 
             app.UseAuthorization();
