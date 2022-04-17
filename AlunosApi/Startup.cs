@@ -1,5 +1,6 @@
 using AlunosApi.Context;
 using AlunosApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -9,10 +10,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace AlunosApi
@@ -30,14 +33,71 @@ namespace AlunosApi
         {
             services.AddDbContext<AppDbContext>(options => { options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")); }); // -para fazer uso do SQLServer
 
+            services.AddCors();
             services.AddScoped<IAlunoService, AlunoService>(); // -diz ao container injetor de dependecia que ao referenciar um IAlunoService, ele implementara os metodos da Classe AlunoService
+            services.AddScoped<IAuthenticate, AuthenticateService>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
+            // Adiciona a configuração padrão para o os tipos em seu construtor, que representam o perfil do usuario
+
+            services.AddIdentity<IdentityUser, IdentityRole>() //-- Contem as prop do User que ira autenticar
+                .AddEntityFrameworkStores<AppDbContext>() //-- Serve para registrar e recuperar infos do user e dos perfis, que foram registered, no caso será recuperado do Entity
+                .AddDefaultTokenProviders(); //-- Usado para gerar token nas operações de conta do user como redefinição de senha, autenticação de dois fatores
+
+
+            //Registrar e habilitar a autenticação
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                 .AddJwtBearer(options =>
+                 {
+                     //define oque deseja validar, e obtendo os valores do arquivo de configuração
+
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ValidateIssuerSigningKey = true,
+
+                         ValidIssuer = Configuration["Jwt:Issuer"], // quem está emitindo o token
+                         ValidAudience = Configuration["Jwt:Audience"], // destinatario do token
+                         IssuerSigningKey = new SymmetricSecurityKey
+                            (Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])) // chave secreta para assinar o token
+                     };
+                 });
+
 
             services.AddControllers();
+
+
+            //Para Autenticar Users pelo SWAGGER
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "AlunosApi", Version = "v1" });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement 
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    }
+                });
             });
         }
 
@@ -59,6 +119,9 @@ namespace AlunosApi
 
             app.UseRouting();
 
+            // Estas duas declarações devem seguir estas ordens
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

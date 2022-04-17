@@ -1,5 +1,7 @@
 ﻿using AlunosApi.Models;
 using AlunosApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,7 +13,8 @@ namespace AlunosApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController] // -aciona erros de validação para uma resposta HTTP 400. Possui (FromBody, FromForm etc...)
-
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    
     //[Produces("aplication/json")] // -define o formato do retorno da Api 
     public class AlunoController : ControllerBase
     {
@@ -57,8 +60,8 @@ namespace AlunosApi.Controllers
                 //return StatusCode(StatusCodes.Status500InternalServerError, "erro ao obter alunos");
             }
         }
-
-        [HttpGet("{id:int}", Name = "byid")]
+    
+        [HttpGet("byid")]
         public async Task<ActionResult<Aluno>> GetAlunoById(int id)
         {
             try
@@ -84,7 +87,8 @@ namespace AlunosApi.Controllers
             {
                 await _alunoService.CreateAluno(aluno);
 
-                return CreatedAtRoute(nameof(GetAlunoById), new { id = aluno.Id }, aluno); // -obtem o recurso recem criado, retorna 201, usado somente me Post
+               // return CreatedAtRoute("byid", new { id = aluno.Id }, aluno); // -obtem o recurso recem criado, retorna 201, usado somente me Post
+                return Ok($"Aluno criado com sucesso");
             }
             catch
             {
