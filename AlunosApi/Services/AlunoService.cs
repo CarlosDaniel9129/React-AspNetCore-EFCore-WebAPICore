@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AlunosApi.Services
 {
-    public class AlunoService : IAlunoService // -forma mais correta dee trabalhar com depenndencias
+    public class AlunoService : IAlunoService // -forma mais correta deee trabalhar com depenndencias
     {
         private readonly AppDbContext _context;
 
