@@ -4,19 +4,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AlunosApi
 {
@@ -38,19 +33,19 @@ namespace AlunosApi
             services.AddScoped<IAuthenticate, AuthenticateService>();
 
 
-            // Adiciona a configuração padrão para o os tipos em seu construtor, que representam o perfil do usuario
+            // Adiciona a configuraï¿½ï¿½o padrï¿½o para o os tipos em seu construtor, que representam o perfil do usuario
 
             services.AddIdentity<IdentityUser, IdentityRole>() //-- Contem as prop do User que ira autenticar
-                .AddEntityFrameworkStores<AppDbContext>() //-- Serve para registrar e recuperar infos do user e dos perfis, que foram registered, no caso será recuperado do Entity
-                .AddDefaultTokenProviders(); //-- Usado para gerar token nas operações de conta do user como redefinição de senha, autenticação de dois fatores
+                .AddEntityFrameworkStores<AppDbContext>() //-- Serve para registrar e recuperar infos do user e dos perfis, que foram registered, no caso serï¿½ recuperado do Entity
+                .AddDefaultTokenProviders(); //-- Usado para gerar token nas operaï¿½ï¿½es de conta do user como redefiniï¿½ï¿½o de senha, autenticaï¿½ï¿½o de dois fatores
 
 
-            //Registrar e habilitar a autenticação
+            //Registrar e habilitar a autenticaï¿½ï¿½o
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
                  {
-                     //define oque deseja validar, e obtendo os valores do arquivo de configuração
+                     //define oque deseja validar, e obtendo os valores do arquivo de configuraï¿½ï¿½o
 
                      options.TokenValidationParameters = new TokenValidationParameters
                      {
@@ -59,7 +54,7 @@ namespace AlunosApi
                          ValidateLifetime = true,
                          ValidateIssuerSigningKey = true,
 
-                         ValidIssuer = Configuration["Jwt:Issuer"], // quem está emitindo o token
+                         ValidIssuer = Configuration["Jwt:Issuer"], // quem estï¿½ emitindo o token
                          ValidAudience = Configuration["Jwt:Audience"], // destinatario do token
                          IssuerSigningKey = new SymmetricSecurityKey
                             (Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])) // chave secreta para assinar o token
@@ -112,14 +107,14 @@ namespace AlunosApi
 
             app.UseCors(options =>
             {
-                options.WithOrigins("http://localhost:3000"); // -rota onde o React ira fazer as requisições
+                options.WithOrigins("http://localhost:3000"); // -rota onde o React ira fazer as requisiï¿½ï¿½es
                 options.AllowAnyMethod();
                 options.AllowAnyHeader();
             });
 
             app.UseRouting();
 
-            // Estas duas declarações devem seguir estas ordens
+            // Estas duas declaraï¿½ï¿½es devem seguir estas ordens
 
             app.UseAuthentication();
             app.UseAuthorization();
