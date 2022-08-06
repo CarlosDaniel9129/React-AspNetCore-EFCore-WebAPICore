@@ -107,7 +107,7 @@ namespace AlunosApi
 
             app.UseCors(options =>
             {
-                options.WithOrigins("http://localhost:3000"); // -rota onde o React ira fazer as requisi��es
+                options.WithOrigins("http://localhost:5000"); // -rota onde o React ira fazer as requisi��es
                 options.AllowAnyMethod();
                 options.AllowAnyHeader();
             });
