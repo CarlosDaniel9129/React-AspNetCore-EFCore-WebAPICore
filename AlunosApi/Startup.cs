@@ -40,7 +40,7 @@ namespace AlunosApi
                 .AddDefaultTokenProviders(); //-- Usado para gerar token nas opera��es de conta do user como redefini��o de senha, autentica��o de dois fatores
 
 
-            //Registrar e habilitar a autentica��o
+            //Registrar e habilitar a autentica��o.
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  .AddJwtBearer(options =>
